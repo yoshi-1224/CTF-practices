@@ -1,0 +1,60 @@
+###ROP1
+
+This is a challenge from PicoCTF 2014 on return oriented programming. We are given a vulnerable C code shown below.
+
+```
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+void be_nice_to_people(){
+    gid_t gid = getegid();
+    setresgid(gid, gid, gid);
+}
+
+void vuln(char *name){
+    char buf[64];
+    strcpy(buf, name);
+}
+
+int main(int argc, char **argv){
+    be_nice_to_people();
+    if(argc > 1)
+        vuln(argv[1]);
+    return 0;
+}
+```
+
+#Solution
+What should come to our attention is the use of ```strcpy()``` function. This does not check for the length of the string we put in, so we are able to overwrite the content of the stack.
+As the name of the challenge suggests, we are to implement ROP, and what we need here is so-called ROP-gadget that alters the value of the instruction pointer %eip 
+in order to execute our shellcode.
+Conveniently, the ```strcpy``` function returns the pointer to the string argument (=buf), and therefore, the value of %eax is exactly the address of buf in the stack.
+What we can manipulate here is string %eax points to, so we want to set %eip to point to the address of %eax (by executing the instruction ```call %eax```). We can find such ROP-gadgets using objdump as well as grep
+```
+objdump -d rop1 | grep "call.*eax"
+```
+The first one in the list is 
+
+
+Next, we need to figure out the distance between the address of %eax and the saved %eip in the stack. If we could overwrite this %eip to point to the instruction address of ROP-gadget,
+we can set %eip to the address of %eax. On the server, we were equipped with gdb. Set a breakpoint at vuln() and run the program.
+```
+(gdb) b vuln
+```
+We can now check the address of saved eip in the stack.
+```
+(gdb) info frame
+```
+This should print something like the following (the address may differ)
+```
+Saved registers: 
+ ebp at 0xffffd728, eip at 0xffffd72c
+```
+Ok, now let' see where %eax points to when it returns from ```strcpy()```
+```
+(gdb) info register eax
+eax         0xfffd6e0
+```
+Take the difference, and this gives ```76```.
+
