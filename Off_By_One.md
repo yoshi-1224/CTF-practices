@@ -1,6 +1,6 @@
 ###Off By One
 
-This challenge comes from PicoCTF 2014. We are given a vulnerable C code in the directory ```/home/obo/```. Our goal is to cat flag.txt, which is placed in the same directory.
+This challenge comes from PicoCTF 2014. We are given a vulnerable C code in the directory ```/home/obo/```. Our goal is to cat ```flag.txt```, which is placed in the same directory.
 
 The obvious mistake that the programmer has made is buffer overflow. Instead of using ```<```, the programmer used ```<=```, reading one additional index.
 This vulnerability comes in handy for bypassing the password check. For now, let's talk about the first half of the ```main()```.
@@ -87,7 +87,7 @@ Then this would be the file executed by the program. So, in the root directory, 
 ```
 python -c 'print "abcdefg123456789\n\x01" ' | /home/obo/obo
 ```
-Note that we have get a help from Python because we want to pass integer (or hex) 1, not 1 as ASCII character. 
+Note that we have get to execute the program this way using Python because we want to pass integer (or hex) 1, not 1 as ASCII character. 
 
 -------------2--------------
 
