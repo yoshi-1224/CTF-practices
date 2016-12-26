@@ -1,4 +1,4 @@
-###OBO 
+###Off By One
 
 This challenge comes from PicoCTF 2014. We are given a vulnerable C code in the directory ```/home/obo/```. Our goal is to cat flag.txt, which is placed in the same directory.
 
@@ -75,7 +75,9 @@ for this string! Note that to set index[16] = 1, we can supply g as one of the c
 Another mistake we can exploit is that the programmer called python to change the password rather than do it within the C code. 
 There are a few ways we can exploit this.
 
-1. We can go to the root directory and from there execute ```obo```. It is important to know that ```set_password.py``` is called relative to the program. Say we make a python file in the home directory with
+-------------1--------------
+
+We can go to the root directory and from there execute ```obo```. It is important to know that ```set_password.py``` is called relative to the program. Say we make a python file in the home directory with
 identical name but has the following content
 
 ```
@@ -87,7 +89,9 @@ python -c 'print "abcdefg123456789\n\x01" ' | /home/obo/obo
 ```
 Note that we have get a help from Python because we want to pass integer (or hex) 1, not 1 as ASCII character. 
 
-2. In the home directory, we can make a bash script named ```python``` with the following code inside
+-------------2--------------
+
+In the home directory, we can make a bash script named ```python``` with the following code inside
 ```
 #!bin/sh
 cat /home/obo/flag.txt
