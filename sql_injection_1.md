@@ -44,7 +44,7 @@ if (!$logged_in) {
 ```
 From the above it is clear that to get the flag we need to bypass three conditions:
 
-1. # of rows returned from the query === 1 (triple equal sign checks for identival value as well as datatype)
+1. # of rows returned from the query === 1 (triple equal sign checks for identical value as well as datatype)
 2. our "password" variable supplied via POST method must match the "password" field of the result
 3. the "user_level" field must be greater or equal to 1337
 
@@ -57,13 +57,17 @@ Basically, a ```UNION``` clause merges the result of multiple ```SELECT``` state
 2. The data types of the corresponding columns in the SELECT statements must match (or must be convertable to match)
 
 Note on the difference between ```UNION SELECT``` and ```UNION ALL SELECT```:
+
 ```UNION SELECT``` effectively removes duplicate results i.e. perform DISTINCT, while ```UNION ALL``` does not.
 
-Now, there is also a convenient clause for SQL query, that is ```AS```. Using this, we can "fake" entries in the table. On top of this, we want to nullify the orignal query, and this can be achieved doing the opposite
+Now, there is also a convenient clause for SQL query, that is, ```AS```. Using this, we can "fake" entries in the table. On top of this, we want to nullify the orignal query, and this can be achieved doing the opposite
 of what we normally do - add the condition ```AND 1=0``` which always returns false, instead of ```OR 1=1``` which always returns true.
 
-We can attach the following string to the original query ```$query = "SELECT * FROM users WHERE username='$username'"``` as follows:
-```' AND 1=0 UNION SELECT 'admin' AS username, 'password' AS password, 1337 AS user_level #``` (```#``` can be replaced by ```-- ```. Note the space that follows!).
+The original query is 
+```$query = "SELECT * FROM users WHERE username='$username'"```
+and we can attach the following string:
+```' AND 1=0 UNION SELECT 'admin' AS username, 'password' AS password, 1337 AS user_level #``` 
+(```#``` can be replaced by ```-- ```. Note the a space that follows!).
 
 With the debug mode turned on (turn on by editing the ```hidden``` input field in HTML), it gives the following error message:
 ```
