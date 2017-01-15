@@ -43,6 +43,7 @@ if (!$logged_in) {
 ?>
 ```
 From the above it is clear that to get the flag we need to bypass three conditions:
+
 1. # of rows returned from the query === 1 (triple equal sign checks for identival value as well as datatype)
 2. our "password" variable supplied via POST method must match the "password" field of the result
 3. the "user_level" field must be greater or equal to 1337
@@ -51,6 +52,7 @@ Without the possiblity to register any user to the database, it becomes certain 
 we can achieve this by appending ```UNION SELECT``` query.
 
 Basically, a ```UNION``` clause merges the result of multiple ```SELECT``` statements. For it to work, two conditions must be satisfied:
+
 1. The # of columns in the SELECT statements must match (UNION is based on the # of columns in the FIRST query)
 2. The data types of the corresponding columns in the SELECT statements must match (or must be convertable to match)
 
