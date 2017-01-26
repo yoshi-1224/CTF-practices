@@ -9,7 +9,7 @@ For us to solve this challenge, it is necessary to know that repeating XOR ciphe
 ```
 Note that the key repeats because it is shorter than the plaintext. What is important is that when we perform encryption with a repeated key, we actually get repeated sequences of characters, which are most frequency the-key-length (or multiples of key-length) apart. The reason for this is that there are likely repeats in the plaintext itself.
 
-#Properties on XOR
+####Properties on XOR
 - XOR is used in encryption because of its special property
 
 1. a XOR a = 0. i.e. anything XOR'ed with itself is 0
@@ -30,4 +30,4 @@ By sorting this sequence we see that the most-frequently occurring (the mode) an
 #Substitution cipher
 From there, it is just a substitution-cipher hack. Assume that key length = x. Then we can split the ciphertext into small texts of length x. Now, the first byte of All the small texts are XOR'ed with the same, first key byte, the second byte the same second key byte etc. Then it becomes the matter of performing frequency analysis! 
 
-The key here turns out to be ``````
+The key here turns out to be
