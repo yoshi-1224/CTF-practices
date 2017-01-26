@@ -16,18 +16,24 @@ Note that the key repeats because it is shorter than the plaintext. What is impo
 2. a XOR 0 = a. i.e. anything XOR'ed with 0 is itself
 3. XOR is commutative and associative
 
-```With the facts in mind, assume p XOR k = c. Say p = plaintext, k = key, c = ciphertext. Note that length of key = length of plaintext.
+```
+
+With the facts in mind, assume p XOR k = c. Say p = plaintext, k = key, c = ciphertext. Note that length of key = length of plaintext.
 Then c XOR k = (p XOR k) XOR k = p XOR (k XOR k) = p XOR 0 = p
 ```
+
+
 The reason why I said repeated XOR is simply a Vigenere cipher is because this XOR property is the same as so-called "shift" in the Vigenere cipher. 
 
 Back to the story, what Kasiski Examination does is to firstly calculate the spacings between each of repeated sequences, and for each length of spacing take all the factors of it (except for 1). For example, if the spacings were 8, 16, and 32, we have the sequence
+
 ```
 | 2, 4, 8, | 2, 4, 8, 16 | 2, 4, 8, 16, 32 |
 ```
+
 By sorting this sequence we see that the most-frequently occurring (the mode) and therefore the most likely key lengths are 2, 4, or 8. 
 
-#Substitution cipher
+###Substitution cipher
 From there, it is just a substitution-cipher hack. Assume that key length = x. Then we can split the ciphertext into small texts of length x. Now, the first byte of All the small texts are XOR'ed with the same, first key byte, the second byte the same second key byte etc. Then it becomes the matter of performing frequency analysis! 
 
 The key here turns out to be
